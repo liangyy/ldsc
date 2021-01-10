@@ -95,6 +95,36 @@ def sumstats(fh, alleles=False, dropna=True):
 
     return x
 
+def load_parquet(fn, snp_meta, sample_size):
+    '''
+    Load tensorqtl trans map output into memory.
+    '''
+    if '{chr_num}' in fn:
+        chrs = [ i for i in range(1, 23) ]
+        df = []
+        for i in chrs:
+            df.append(pd.read_parquet(fn.format(chr_num=i)))
+        df = pd.concat(df, axis=0)
+    else:
+        df = pd.read_parquet(fn)
+    if '{chr_num}' in snp_meta:
+        chrs = [ i for i in range(1, 23) ]
+        snp = []
+        for i in chrs:
+            snp.append(pd.read_csv(snp_meta.format(chr_num=i), sep='\s+'))
+        snp = pd.concat(snp, axis=0)
+    else:
+        snp = pd.read_csv(snp_meta, sep='\s+')
+    snp.columns = ['CHR', 'SNP', 'NA', 'POS', 'A1', 'A2']
+    df.drop_duplicates(subset='SNP', inplace=True)
+    snp.drop_duplicates(subset='SNP', inplace=True)
+    df = pd.merge(df, snp, on='SNP').reset_index(drop=True)
+    df.z = df.b / df.b_se
+    df.n = float(sample_size)
+    out = df[['SNP', 'z', 'n', 'A2', 'A1']]  # the order of a1 and a2 are flipped in tensorqtl
+    out.rename(columns={'z': 'Z', 'n': 'N', 'A2': 'A1', 'A1': 'A2'}, inplace=True)
+    return out
+
 
 def ldscore_fromlist(flist, num=None):
     '''Sideways concatenation of a list of LD Score files.'''

@@ -577,6 +577,12 @@ parser.add_argument('--samp-prev',default=None,
     help='Sample prevalence of binary phenotype (for conversion to liability scale).')
 parser.add_argument('--pop-prev',default=None,
     help='Population prevalence of binary phenotype (for conversion to liability scale).')
+parser.add_argument('--load-parquet',action='store_true',
+    help='Only effective with --rg. Load other GWASs as tensorqtl parquet.')
+parser.add_argument('--snp-meta',default=None,
+    help='Only effective with --load-parquet. The meta data of SNP.')
+parser.add_argument('--sample-size',default=None, type=float,
+    help='Only effective with --load-parquet. The sample size of the other GWASs.')
 
 if __name__ == '__main__':
 
