@@ -160,7 +160,8 @@ def _read_chr_split_files(chr_arg, not_chr_arg, log, noun, parsefunc, **kwargs):
 def _read_sumstats(args, log, fh, alleles=False, dropna=False):
     '''Parse summary statistics.'''
     log.log('Reading summary statistics from {S} ...'.format(S=fh))
-    if args.load_parquet is True:
+    _, file_ext = os.path.splitext(fh)
+    if args.load_parquet is True and file_ext == '.parquet':
         sumstats = ps.load_parquet(fh, args.snp_meta, args.sample_size)
     else:
         sumstats = ps.sumstats(fh, alleles=alleles, dropna=dropna)
