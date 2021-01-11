@@ -382,7 +382,10 @@ def estimate_h2(args, log):
 def estimate_rg(args, log):
     '''Estimate rg between trait 1 and a list of other traits.'''
     args = copy.deepcopy(args)
-    rg_paths, rg_files = _parse_rg(args.rg)
+    if args.rg_target_list is False:
+        rg_paths, rg_files = _parse_rg(args.rg)
+    else:
+        rg_paths, rg_files = _parse_rg_list(args.rg)
     n_pheno = len(rg_paths)
     f = lambda x: _split_or_none(x, n_pheno)
     args.intercept_h2, args.intercept_gencov, args.samp_prev, args.pop_prev = map(f,
@@ -547,6 +550,25 @@ def _rg(sumstats, args, log, M_annot, ref_ld_cnames, w_ld_cname, i):
 def _parse_rg(rg):
     '''Parse args.rg.'''
     rg_paths = _splitp(rg)
+    rg_files = [x.split('/')[-1] for x in rg_paths]
+    if len(rg_paths) < 2:
+        raise ValueError(
+            'Must specify at least two phenotypes for rg estimation.')
+
+    return rg_paths, rg_files
+
+def _parse_rg_list(rg):
+    '''Parse args.rg.'''
+    rg_paths = _splitp(rg)
+    if len(rg_paths) != 2:
+        raise ValueError(
+            'With --rg-target-list, we require --rg having two files.')
+    rg_focal, rg_list = rg_paths
+    rg_paths = [ rg_focal ]
+    with open(rg_list, 'r') as f:
+        for i in f:
+            i = i.strip()
+            rg_paths.append(i)
     rg_files = [x.split('/')[-1] for x in rg_paths]
     if len(rg_paths) < 2:
         raise ValueError(

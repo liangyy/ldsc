@@ -583,6 +583,8 @@ parser.add_argument('--snp-meta',default=None,
     help='Only effective with --load-parquet. The meta data of SNP.')
 parser.add_argument('--sample-size',default=None, type=float,
     help='Only effective with --load-parquet. The sample size of the other GWASs.')
+parser.add_argument('--rg-target-list',action='store_true',
+    help='Work with --rg focal_gwas,target_list.')
 
 if __name__ == '__main__':
 
