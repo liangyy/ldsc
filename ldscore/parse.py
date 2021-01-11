@@ -115,12 +115,13 @@ def load_parquet(fn, snp_meta, sample_size):
         snp = pd.concat(snp, axis=0)
     else:
         snp = pd.read_csv(snp_meta, sep='\s+')
+    df = df.reset_index(drop=True)
     snp.columns = ['CHR', 'SNP', 'NA', 'POS', 'A1', 'A2']
     df.rename(columns={'variant_id': 'SNP'}, inplace=True)
     df.drop_duplicates(subset='SNP', inplace=True)
     snp.drop_duplicates(subset='SNP', inplace=True)
     df = pd.merge(df, snp, on='SNP').reset_index(drop=True)
-    df['z'] = df.b / df.b_se
+    df['z'] = df.b.values / df.b_se.values
     df['n'] = float(sample_size)
     out = df[['SNP', 'z', 'n', 'A2', 'A1']]  # the order of a1 and a2 are flipped in tensorqtl
     out.rename(columns={'z': 'Z', 'n': 'N', 'A2': 'A1', 'A1': 'A2'}, inplace=True)
