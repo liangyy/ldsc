@@ -18,7 +18,8 @@ import pandas as pd
 from subprocess import call
 from itertools import product
 import time, sys, traceback, argparse
-
+import sys
+sys.stdout.flush()
 
 try:
     x = pd.DataFrame({'A': [1, 2, 3]})
