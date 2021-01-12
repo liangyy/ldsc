@@ -598,6 +598,11 @@ def munge_sumstats(args, p=True):
 
         cname_translation = {x: cname_map[clean_header(x)] for x in file_cnames if
                              clean_header(x) in cname_map}  # note keys not cleaned
+        if not ('N_CAS' in cname_translation.values() and 'N_CON' in cname_translation):
+            keylist = cname_translation.keys()
+            for k in keylist:
+                if cname_translation[k] in ['N_CAS', 'N_CON']:
+                    del cname_translation[k]
         cname_description = {
             x: describe_cname[cname_translation[x]] for x in cname_translation}
         if args.signed_sumstats is None and not args.a1_inc:
